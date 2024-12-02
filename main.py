@@ -10,6 +10,7 @@ def main():
     print(f"Starting asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
+    pygame.init()
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
@@ -29,7 +30,7 @@ def main():
     Asteroid.containers = (asteroids,updatable,drawable)
     # you have to put comma after single item in tuple, 
     # otherwise Python won't recognize it as a tuple
-    AsteroidField.containers = (updatable,) 
+    AsteroidField.containers = updatable
     field = AsteroidField()
 
     shots = pygame.sprite.Group()
@@ -43,21 +44,25 @@ def main():
         for item in updatable:
             item.update(dt)
 
-        screen.fill("black")
         
-        for item in drawable:
-            item.draw(screen)
-
         for asteroid in asteroids:
-            collision = player.check_collision(asteroid)
+            collision = asteroid.check_collision(player)
+
             if(collision):
                 print(f"Game over!")
                 sys.exit()
+
             for bullet in shots:
-                collision = bullet.check_collision(asteroid)
+                collision = asteroid.check_collision(bullet)
                 if(collision):
                     asteroid.kill()
                     bullet.kill()
+        
+        screen.fill("black")
+
+        for item in drawable:
+            item.draw(screen)
+
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
